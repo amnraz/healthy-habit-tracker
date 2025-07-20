@@ -1,753 +1,3 @@
-<!-- <!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Habit Tracker</title>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-    <style>
-        :root {
-            --primary-color: #4f46e5;
-            --secondary-color: #10b981;
-            --bg-color: #f8fafc;
-            --text-color: #1e293b;
-            --card-bg: #ffffff;
-            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            --border-radius: 0.5rem;
-        }
-
-        .dark-mode {
-            --primary-color: #6366f1;
-            --secondary-color: #10b981;
-            --bg-color: #1e293b;
-            --text-color: #f8fafc;
-            --card-bg: #334155;
-            --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            transition: all 0.3s ease;
-            min-height: 100vh;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 1rem;
-        }
-
-        /* Auth Styles */
-        .auth-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            padding: 1rem;
-        }
-
-        .auth-card {
-            background-color: var(--card-bg);
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-            padding: 2rem;
-            width: 100%;
-            max-width: 400px;
-        }
-
-        .auth-title {
-            font-size: 2rem;
-            margin-bottom: 1.5rem;
-            color: var(--primary-color);
-            text-align: center;
-        }
-
-        .auth-form {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .form-group {
-            margin-bottom: 1rem;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #cbd5e1;
-            border-radius: var(--border-radius);
-            background-color: var(--card-bg);
-            color: var(--text-color);
-            transition: border-color 0.3s;
-        }
-
-        .form-group input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-        }
-
-        .btn {
-            padding: 0.75rem;
-            border: none;
-            border-radius: var(--border-radius);
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .btn-primary {
-            background-color: var(--primary-color);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background-color: #4338ca;
-        }
-
-        .btn-secondary {
-            background-color: var(--secondary-color);
-            color: white;
-        }
-
-        .btn-secondary:hover {
-            background-color: #0d9f6e;
-        }
-
-        .auth-links {
-            margin-top: 1rem;
-            text-align: center;
-        }
-
-        .auth-links a {
-            color: var(--primary-color);
-            text-decoration: none;
-        }
-
-        .auth-links a:hover {
-            text-decoration: underline;
-        }
-
-        /* Dashboard Styles */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 0;
-            margin-bottom: 2rem;
-        }
-
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--primary-color);
-        }
-
-        .user-menu {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: var(--primary-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .dark-mode-toggle {
-            background: none;
-            border: none;
-            color: var(--text-color);
-            cursor: pointer;
-            font-size: 1.25rem;
-        }
-
-        .stats-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-
-        .stat-card {
-            background-color: var(--card-bg);
-            border-radius: var(--border-radius);
-            padding: 1.5rem;
-            box-shadow: var(--shadow);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .stat-card .icon {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
-            color: var(--primary-color);
-        }
-
-        .stat-card .value {
-            font-size: 2rem;
-            font-weight: 700;
-        }
-
-        .stat-card .label {
-            color: #64748b;
-            font-size: 0.875rem;
-        }
-
-        .habits-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .habit-card {
-            background-color: var(--card-bg);
-            border-radius: var(--border-radius);
-            padding: 1.5rem;
-            box-shadow: var(--shadow);
-            position: relative;
-        }
-
-        .habit-card .category {
-            position: absolute;
-            top: 0;
-            right: 0;
-            background-color: var(--primary-color);
-            color: white;
-            padding: 0.25rem 0.75rem;
-            border-radius: 0 var(--border-radius) 0 var(--border-radius);
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-
-        .habit-card h3 {
-            margin-bottom: 0.5rem;
-            color: var(--primary-color);
-        }
-
-        .habit-card .streak {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .habit-card .streak .days {
-            font-weight: 700;
-            color: var(--secondary-color);
-        }
-
-        .habit-card .actions {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 1rem;
-        }
-
-        .habit-card .btn-small {
-            padding: 0.5rem 1rem;
-            font-size: 0.875rem;
-        }
-
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s, visibility 0.3s;
-        }
-
-        .modal.show {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .modal-content {
-            background-color: var(--card-bg);
-            border-radius: var(--border-radius);
-            padding: 2rem;
-            width: 100%;
-            max-width: 500px;
-            box-shadow: var(--shadow);
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
-
-        .modal-title {
-            font-size: 1.5rem;
-            color: var(--primary-color);
-        }
-
-        .close-btn {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            color: var(--text-color);
-            cursor: pointer;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .stats-container {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .stats-container {
-                grid-template-columns: 1fr;
-            }
-
-            .auth-card {
-                padding: 1.5rem;
-            }
-        }
-    </style>
-</head>
-
-<body>
-    <div id="auth-container" class="auth-container">
-        <div class="auth-card">
-            <h2 class="auth-title">Habit Tracker</h2>
-            <div id="login-form" class="auth-form">
-                <div class="form-group">
-                    <label for="login-email">Email</label>
-                    <input type="email" id="login-email" placeholder="Enter your email">
-                </div>
-                <div class="form-group">
-                    <label for="login-password">Password</label>
-                    <input type="password" id="login-password" placeholder="Enter your password">
-                </div>
-                <button class="btn btn-primary" id="login-btn">Login</button>
-                <div class="auth-links">
-                    <a href="#" id="show-signup">Don't have an account? Sign up</a>
-                </div>
-            </div>
-            <div id="signup-form" class="auth-form" style="display: none;">
-                <div class="form-group">
-                    <label for="signup-email">Email</label>
-                    <input type="email" id="signup-email" placeholder="Enter your email">
-                </div>
-                <div class="form-group">
-                    <label for="signup-password">Password</label>
-                    <input type="password" id="signup-password" placeholder="Create a password">
-                </div>
-                <div class="form-group">
-                    <label for="signup-confirm-password">Confirm Password</label>
-                    <input type="password" id="signup-confirm-password" placeholder="Confirm your password">
-                </div>
-                <button class="btn btn-secondary" id="signup-btn">Sign Up</button>
-                <div class="auth-links">
-                    <a href="#" id="show-login">Already have an account? Login</a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="dashboard" class="container" style="display: none;">
-        <header class="header">
-            <div class="user-menu">
-                <button id="dark-mode-toggle" class="dark-mode-toggle">
-                    <span id="dark-mode-icon">🌙</span>
-                </button>
-                <div id="user-avatar" class="user-avatar">U</div>
-                <button id="logout-btn" class="btn btn-secondary btn-small">Logout</button>
-            </div>
-
-        </header>
-
-        <div class="stats-container">
-            <div class="stat-card">
-                <div class="icon">📊</div>
-                <div class="value" id="total-habits">0</div>
-                <div class="label">Total Habits</div>
-            </div>
-            <div class="stat-card">
-                <div class="icon">🔥</div>
-                <div class="value" id="active-streak">0</div>
-                <div class="label">Active Streak</div>
-            </div>
-            <div class="stat-card">
-                <div class="icon">💯</div>
-                <div class="value" id="completion-rate">0%</div>
-                <div class="label">Completion Rate</div>
-            </div>
-        </div>
-
-        <div class="header">
-            <h2>Your Habits</h2>
-            <button id="add-habit-btn" class="btn btn-primary">Add Habit</button>
-        </div>
-
-        <div id="habits-container" class="habits-container">
-             Habit cards will be added here dynamically 
-        </div>
-    </div>
-
-     Add Habit Modal 
-    <div id="add-habit-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">Add New Habit</h3>
-                <button class="close-btn" id="close-habit-modal">&times;</button>
-            </div>
-            <form id="habit-form">
-                <div class="form-group">
-                    <label for="habit-name">Habit Name</label>
-                    <input type="text" id="habit-name" placeholder="e.g. Morning Meditation" required>
-                </div>
-                <div class="form-group">
-                    <label for="habit-category">Category</label>
-                    <select id="habit-category" required>
-                        <option value="">Select a category</option>
-                        <option value="meditation">Meditation</option>
-                        <option value="hydration">Hydration</option>
-                        <option value="fitness">Fitness</option>
-                        <option value="nutrition">Nutrition</option>
-                        <option value="sleep">Sleep</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="habit-frequency">Frequency</label>
-                    <select id="habit-frequency" required>
-                        <option value="daily">Daily</option>
-                        <option value="weekly">Weekly</option>
-                        <option value="monthly">Monthly</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="habit-goal">Goal (optional)</label>
-                    <input type="text" id="habit-goal" placeholder="e.g. Meditate for 10 minutes">
-                </div>
-                <button type="submit" class="btn btn-primary">Add Habit</button>
-            </form>
-        </div>
-    </div>
-
-    <script>
-        // Firebase configuration (replace with your actual config)
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyBSs9ykIHJESEBKKWG2cvmQW_Qpq5TgdS4",
-            authDomain: "meow-a2101.firebaseapp.com",
-            projectId: "meow-a2101",
-            storageBucket: "meow-a2101.firebasestorage.app",
-            messagingSenderId: "198543656804",
-            appId: "1:198543656804:web:1802e6f44291b2cbff9c71",
-            measurementId: "G-G6GF81S68Q"
-        };
-
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
-
-        // DOM Elements
-        const authContainer = document.getElementById('auth-container');
-        const dashboard = document.getElementById('dashboard');
-        const loginForm = document.getElementById('login-form');
-        const signupForm = document.getElementById('signup-form');
-        const showSignup = document.getElementById('show-signup');
-        const showLogin = document.getElementById('show-login');
-        const loginBtn = document.getElementById('login-btn');
-        const signupBtn = document.getElementById('signup-btn');
-        const loginEmail = document.getElementById('login-email');
-        const loginPassword = document.getElementById('login-password');
-        const signupEmail = document.getElementById('signup-email');
-        const signupPassword = document.getElementById('signup-password');
-        const signupConfirmPassword = document.getElementById('signup-confirm-password');
-        const userAvatar = document.getElementById('user-avatar');
-        const darkModeToggle = document.getElementById('dark-mode-toggle');
-        const darkModeIcon = document.getElementById('dark-mode-icon');
-        const addHabitBtn = document.getElementById('add-habit-btn');
-        const habitsContainer = document.getElementById('habits-container');
-        const addHabitModal = document.getElementById('add-habit-modal');
-        const closeHabitModal = document.getElementById('close-habit-modal');
-        const habitForm = document.getElementById('habit-form');
-        const totalHabitsEl = document.getElementById('total-habits');
-        const activeStreakEl = document.getElementById('active-streak');
-        const completionRateEl = document.getElementById('completion-rate');
-        const logoutBtn = document.getElementById('logout-btn');
-
-
-        // State variables
-        let currentUser = null;
-        let habits = [];
-        let darkMode = false;
-
-        // Event Listeners
-        showSignup.addEventListener('click', toggleAuthForms);
-        showLogin.addEventListener('click', toggleAuthForms);
-        loginBtn.addEventListener('click', loginUser);
-        signupBtn.addEventListener('click', signupUser);
-        darkModeToggle.addEventListener('click', toggleDarkMode);
-        addHabitBtn.addEventListener('click', () => addHabitModal.classList.add('show'));
-        closeHabitModal.addEventListener('click', () => addHabitModal.classList.remove('show'));
-        habitForm.addEventListener('submit', addNewHabit);
-        logoutBtn.addEventListener('click', () => {
-            auth.signOut()
-                .then(() => {
-                    console.log('User signed out');
-                })
-                .catch((error) => {
-                    console.error('Sign out error:', error);
-                    alert('Failed to logout. Try again.');
-                });
-        });
-
-
-        // Check for saved dark mode preference
-        if (localStorage.getItem('darkMode') === 'enabled') {
-            document.body.classList.add('dark-mode');
-            darkMode = true;
-            darkModeIcon.textContent = '☀️';
-        }
-
-        // Check auth state
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                currentUser = user;
-                userAvatar.textContent = user.email.charAt(0).toUpperCase();
-                authContainer.style.display = 'none';
-                dashboard.style.display = 'block';
-                loadUserHabits();
-            } else {
-                currentUser = null;
-                authContainer.style.display = 'flex';
-                dashboard.style.display = 'none';
-            }
-        });
-
-        // Functions
-        function toggleAuthForms(e) {
-            e.preventDefault();
-            loginForm.style.display = loginForm.style.display === 'none' ? 'flex' : 'none';
-            signupForm.style.display = signupForm.style.display === 'none' ? 'flex' : 'none';
-        }
-
-        async function loginUser(e) {
-            e.preventDefault();
-            const email = loginEmail.value;
-            const password = loginPassword.value;
-
-            try {
-                await auth.signInWithEmailAndPassword(email, password);
-            } catch (error) {
-                alert(error.message);
-            }
-        }
-
-        async function signupUser(e) {
-            e.preventDefault();
-            const email = signupEmail.value;
-            const password = signupPassword.value;
-            const confirmPassword = signupConfirmPassword.value;
-
-            if (password !== confirmPassword) {
-                alert('Passwords do not match');
-                return;
-            }
-
-            try {
-                await auth.createUserWithEmailAndPassword(email, password);
-            } catch (error) {
-                alert(error.message);
-            }
-        }
-
-        function toggleDarkMode() {
-            darkMode = !darkMode;
-            if (darkMode) {
-                document.body.classList.add('dark-mode');
-                darkModeIcon.textContent = '☀️';
-                localStorage.setItem('darkMode', 'enabled');
-            } else {
-                document.body.classList.remove('dark-mode');
-                darkModeIcon.textContent = '🌙';
-                localStorage.setItem('darkMode', 'disabled');
-            }
-        }
-
-        function loadUserHabits() {
-            if (!currentUser) return;
-
-            db.collection('habits')
-                .where('userId', '==', currentUser.uid)
-                .onSnapshot((snapshot) => {
-                    habits = [];
-                    snapshot.forEach(doc => {
-                        habits.push({ id: doc.id, ...doc.data() });
-                    });
-                    renderHabits();
-                    updateStats();
-                });
-        }
-
-        function renderHabits() {
-            habitsContainer.innerHTML = '';
-
-            habits.forEach(habit => {
-                const habitCard = document.createElement('div');
-                habitCard.className = 'habit-card';
-
-                const category = document.createElement('div');
-                category.className = 'category';
-                category.textContent = habit.category.charAt(0).toUpperCase() + habit.category.slice(1);
-
-                const name = document.createElement('h3');
-                name.textContent = habit.name;
-
-                const streak = document.createElement('div');
-                streak.className = 'streak';
-                streak.innerHTML = `
-                    <span class="days">${habit.streak || 0} days</span>
-                    <span>🔥 streak</span>
-                `;
-
-                const goal = document.createElement('p');
-                goal.textContent = habit.goal || '';
-
-                const actions = document.createElement('div');
-                actions.className = 'actions';
-                actions.innerHTML = `
-                    <button class="btn btn-primary btn-small" data-id="${habit.id}" onclick="completeHabit('${habit.id}')">Complete</button>
-                    <button class="btn btn-secondary btn-small" data-id="${habit.id}" onclick="increaseStreak('${habit.id}')">+1 Day</button>
-                `;
-
-                habitCard.appendChild(category);
-                habitCard.appendChild(name);
-                habitCard.appendChild(streak);
-                habitCard.appendChild(goal);
-                habitCard.appendChild(actions);
-
-                habitsContainer.appendChild(habitCard);
-            });
-        }
-
-        async function addNewHabit(e) {
-            e.preventDefault();
-            const name = habitForm['habit-name'].value;
-            const category = habitForm['habit-category'].value;
-            const frequency = habitForm['habit-frequency'].value;
-            const goal = habitForm['habit-goal'].value;
-
-            try {
-                await db.collection('habits').add({
-                    userId: currentUser.uid,
-                    name,
-                    category,
-                    frequency,
-                    goal,
-                    streak: 0,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-
-                addHabitModal.classList.remove('show');
-                habitForm.reset();
-            } catch (error) {
-                console.error('Error adding habit: ', error);
-                alert('Failed to add habit');
-            }
-        }
-
-        async function completeHabit(habitId) {
-            try {
-                await db.collection('habitCompletions').add({
-                    habitId,
-                    userId: currentUser.uid,
-                    completedAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                alert('Habit marked as completed!');
-            } catch (error) {
-                console.error('Error completing habit: ', error);
-                alert('Failed to complete habit');
-            }
-        }
-
-        async function increaseStreak(habitId) {
-            const habit = habits.find(h => h.id === habitId);
-            if (!habit) return;
-
-            const newStreak = (habit.streak || 0) + 1;
-
-            try {
-                await db.collection('habits').doc(habitId).update({
-                    streak: newStreak
-                });
-            } catch (error) {
-                console.error('Error updating streak: ', error);
-            }
-        }
-
-        function updateStats() {
-            totalHabitsEl.textContent = habits.length;
-
-            // Calculate active streak (longest streak among habits)
-            const activeStreak = habits.reduce((max, habit) => {
-                return Math.max(max, habit.streak || 0);
-            }, 0);
-
-            activeStreakEl.textContent = activeStreak;
-
-            // Calculate completion rate (simplified for demo)
-            if (habits.length > 0) {
-                const totalStreaks = habits.reduce((sum, habit) => {
-                    return sum + (habit.streak || 0);
-                }, 0);
-
-                const averageCompletion = Math.round((totalStreaks / habits.length) * 10);
-                completionRateEl.textContent = `${averageCompletion}%`;
-            } else {
-                completionRateEl.textContent = '0%';
-            }
-        }
-
-        // Make functions available globally for buttons in habit cards
-        window.completeHabit = completeHabit;
-        window.increaseStreak = increaseStreak;
-    </script>
-</body>
-
-</html> -->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -903,6 +153,39 @@
             align-items: center;
             padding: 1rem 0;
             margin-bottom: 2rem;
+        }
+
+
+
+        .header-left,
+        .header-center,
+        .header-right {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header-left {
+            justify-content: flex-start;
+        }
+
+        .header-right {
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+            border-radius: 50%;
+        }
+
+        .site-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-align: center;
         }
 
         .logo {
@@ -1136,16 +419,23 @@
 
     <div id="dashboard" class="container" style="display: none;">
         <header class="header">
-            <div class="logo">Habit Tracker</div>
-            <div class="user-menu">
+            <div class="header-left">
+                <img src="logo.jpg" alt="Logo" class="logo" />
+            </div>
+
+            <div class="header-center">
+                <h1 class="site-title">Habit Tracker</h1>
+            </div>
+
+            <div class="header-right user-menu">
                 <button id="dark-mode-toggle" class="dark-mode-toggle">
                     <span id="dark-mode-icon">🌙</span>
                 </button>
                 <div id="user-avatar" class="user-avatar">U</div>
                 <button id="logout-btn" class="btn btn-secondary btn-small">Logout</button>
             </div>
-
         </header>
+
 
         <div class="stats-container">
             <div class="stat-card">
@@ -1171,11 +461,11 @@
         </div>
 
         <div id="habits-container" class="habits-container">
-            <!--    Habit cards will be added here dynamically -->
+               <!-- Habit cards will be added here dynamically  -->
         </div>
     </div>
 
-    <!-- Add Habit Modal  -->
+     <!-- Add Habit Modal   -->
     <div id="add-habit-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -1216,15 +506,15 @@
     </div>
 
     <script>
-        // Firebase configuration (replace with your actual config)
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
         const firebaseConfig = {
-            apiKey: "AIzaSyBSs9ykIHJESEBKKWG2cvmQW_Qpq5TgdS4",
-            authDomain: "meow-a2101.firebaseapp.com",
-            projectId: "meow-a2101",
-            storageBucket: "meow-a2101.firebasestorage.app",
-            messagingSenderId: "198543656804",
-            appId: "1:198543656804:web:1802e6f44291b2cbff9c71",
-            measurementId: "G-G6GF81S68Q"
+            apiKey: "AIzaSyArtCIh5vJBbuZwSaNnahr4J3cJVIb7w6s",
+            authDomain: "health-tarcker.firebaseapp.com",
+            projectId: "health-tarcker",
+            storageBucket: "health-tarcker.firebasestorage.app",
+            messagingSenderId: "551455724294",
+            appId: "1:551455724294:web:96e17f944cd54f5869c487",
+            measurementId: "G-YCJRDKZSM0"
         };
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
