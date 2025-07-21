@@ -1,0 +1,56 @@
+# Habit Tracker
+
+## 🧠 Introduction
+
+Habit Tracker is a full-featured web application designed to help users build and maintain positive habits. It allows users to sign up or log in securely, add and manage habits, track streaks, and visualize statistics like completion rate and active streaks. It supports dark mode and real-time updates using Firebase Firestore.
+
+## 🧰 Project Type
+**Fullstack**  
+- Frontend: HTML, CSS, JavaScript  
+- Backend: Firebase Auth & Firestore  
+- Database: Firestore NoSQL  
+
+## 🚀 Deployed App
+- Frontend: [https://your-deployed-site.web.app](tranquil-custard-666be1.netlify.app)
+<!-- - Backend: Firebase Functions (not applicable if not used) -->
+<!-- - Database: [Firebase Firestore](https://console.firebase.google.com/) -->
+
+## 📁 Directory Structure
+habitt/
+├── frontend/
+│ ├── index.html
+
+
+## ✨ Features
+
+- 🔐 Firebase Authentication (Sign Up & Login)
+- 🎨 Light & Dark Mode Toggle (with localStorage)
+- 📊 Dashboard showing Total Habits, Active Streak, and Completion Rate
+- 📁 Habit Categories: Fitness, Meditation, Hydration, Sleep
+- ✅ Habit Completion & 🔥 Streak Tracking
+- 📅 Frequency Selection (Daily / Weekly / Monthly)
+- 📈 Real-time Firestore syncing
+
+## 🎯 Design Decisions & Assumptions
+
+- Used Firebase Firestore as a serverless backend for quick development and real-time updates.
+- Designed mobile-first responsive layout using vanilla CSS and grid/flexbox.
+- Authentication and authorization are handled through Firebase Auth only.
+- Streak and completion rate are calculated in the frontend using Firestore data.
+- Minimalistic UI to keep users focused on their goals.
+
+## ⚙️ Installation & Getting Started
+
+### Prerequisites
+- Node.js (only if you're using Firebase CLI locally)
+- Firebase project set up with Firestore & Authentication enabled
+
+### Steps
+
+```bash
+# Clone the repo
+git clone https://github.com/amnraz/healthy-habit-tracker.git
+cd habit-tracker/frontend
+
+# Serve locally (use live-server or any static server)
+live-server .
